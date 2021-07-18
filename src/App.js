@@ -24,12 +24,14 @@ function App() {
     },
   ]);
 
-  const addTask = (task) => {
-    console.log(task);
-
-    setTasks([...tasks, task]);
-    console.log(tasks);
-  };
+  const addTask = (task) => setTasks([...tasks, task]);
+  const deleteTask = (id) => setTasks(tasks.filter((task) => task.id !== id));
+  const toggleReminder = (id) =>
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, reminder: !task.reminder } : task
+      )
+    );
 
   return (
     <div className="container">
@@ -38,7 +40,15 @@ function App() {
         onbtnClick={() => setshowAdd(!showAdd)}
       ></Header>
       {!showAdd && <AddTaskForm onAdd={addTask} />}
-      {tasks.length > 0 ? <Tasks tasks={tasks}></Tasks> : <p>No tasks left</p>}
+      {tasks.length > 0 ? (
+        <Tasks
+          tasks={tasks}
+          ondelClicked={deleteTask}
+          onDoubleClick={toggleReminder}
+        ></Tasks>
+      ) : (
+        <p>No tasks left</p>
+      )}
       <Footer />
     </div>
   );
