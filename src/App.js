@@ -2,36 +2,78 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTaskForm from "./components/AddTaskForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* Managing state in app js file and 2-way communication is carried with 
       vannila state management, components are interacted with props. */
 
 function App() {
   const [showAdd, setshowAdd] = useState(true);
-  const [tasks, setTasks] = useState([
-    {
-      id: 22,
-      name: "Doctors Appointment",
-      day: "Feb 5th at 2:30pm",
-      reminder: true,
-    },
-    {
-      id: 12,
-      name: "Meeting at School",
-      day: "Feb 6th at 1:30pm",
-      reminder: true,
-    },
-  ]);
+  const [tasks, setTasks] = useState([]);
 
-  const addTask = (task) => setTasks([...tasks, task]);
-  const deleteTask = (id) => setTasks(tasks.filter((task) => task.id !== id));
-  const toggleReminder = (id) =>
+  const apiEndpoint = "http://localhost:5000/";
+
+  useEffect(() => {
+    const getTasks = async () => {
+      const taskArray = await fetchTasks();
+      setTasks(taskArray);
+    };
+    getTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    const res = await fetch(apiEndpoint + "tasks");
+    const data = await res.json();
+    return data;
+  };
+
+  const fetchTask = async (id) => {
+    const res = await fetch(apiEndpoint + `tasks/${id}`);
+    const data = await res.json();
+    return data;
+  };
+
+  const addTask = async (task) => {
+    const res = await fetch(apiEndpoint + "tasks", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(task),
+    });
+    const data = await res.json();
+    setTasks([...tasks, data]);
+  };
+
+  const deleteTask = async (id) => {
+    const res = await fetch(apiEndpoint + `tasks/${id}`, {
+      method: "DELETE",
+    });
+    res.status === 200
+      ? setTasks(tasks.filter((task) => task.id !== id))
+      : alert("Error deleting the task");
+  };
+
+  const toggleReminder = async (id) => {
+    const taskToToggle = await fetchTask(id);
+    const updTask = { ...taskToToggle, reminder: !taskToToggle.reminder };
+
+    const res = await fetch(apiEndpoint + `tasks/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(updTask),
+    });
+
+    const data = await res.json();
+
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, reminder: !task.reminder } : task
+        task.id === id ? { ...task, reminder: data.reminder } : task
       )
     );
+  };
 
   return (
     <div className="container">

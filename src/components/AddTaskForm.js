@@ -12,7 +12,7 @@ const AddTaskForm = ({ onAdd }) => {
     }
 
     onAdd({
-      name: taskName,
+      text: taskName,
       day: taskDateTime,
       reminder: isReminder,
       id: Math.floor(Math.random(1000) * 13) + 1,

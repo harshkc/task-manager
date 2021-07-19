@@ -14,7 +14,7 @@ const Task = ({ task, ondelClicked, onDoubleClick }) => {
       onDoubleClick={toggleReminder}
     >
       <h3>
-        {task.name + " "}
+        {task.text + " "}
         <FaTimes style={styleButton} onClick={delTask}></FaTimes>
       </h3>
       <p>{task.day}</p>
