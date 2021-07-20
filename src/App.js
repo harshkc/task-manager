@@ -2,7 +2,9 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTaskForm from "./components/AddTaskForm";
+import About from "./components/About";
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 /* Managing state in app js file and 2-way communication is carried with 
       vannila state management, components are interacted with props. */
@@ -76,23 +78,34 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <Header
-        showAdd={showAdd}
-        onbtnClick={() => setshowAdd(!showAdd)}
-      ></Header>
-      {!showAdd && <AddTaskForm onAdd={addTask} />}
-      {tasks.length > 0 ? (
-        <Tasks
-          tasks={tasks}
-          ondelClicked={deleteTask}
-          onDoubleClick={toggleReminder}
-        ></Tasks>
-      ) : (
-        <p>No tasks left</p>
-      )}
-      <Footer />
-    </div>
+    <Router>
+      <div className="container">
+        <Header
+          showAdd={showAdd}
+          onbtnClick={() => setshowAdd(!showAdd)}
+        ></Header>
+        <Route
+          path="/"
+          exact
+          render={(props) => (
+            <>
+              {!showAdd && <AddTaskForm onAdd={addTask} />}
+              {tasks.length > 0 ? (
+                <Tasks
+                  tasks={tasks}
+                  ondelClicked={deleteTask}
+                  onDoubleClick={toggleReminder}
+                ></Tasks>
+              ) : (
+                <p>No tasks left</p>
+              )}
+            </>
+          )}
+        ></Route>
+        <Route path="/about" component={About} />
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
